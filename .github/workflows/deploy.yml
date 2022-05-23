@@ -1,0 +1,24 @@
+name: cloudrun-deploy
+on:
+  push:
+    branches:
+      - master
+jobs:
+  deploy:
+    name: Build and Deploy to Google Cloud Run
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v0.3.0
+        with:
+          credentials: ${{ secrets.GCP_SERVICE_KEY }}
+          service: ${{ secrets.GCP_SERVICE_NAME }}
+          image: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_SERVICE_NAME }}
+          region: us-east1
+          flags: --port 3000
+
+      - name: Echo URL
+        run: echo "${{ steps.deploy.outputs.url }}"
